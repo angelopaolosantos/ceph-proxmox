@@ -1,0 +1,4 @@
+.terraform*
+ansible
+*.tfstate*
+*.tfvars
