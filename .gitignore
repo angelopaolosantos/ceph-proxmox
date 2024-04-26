@@ -1,4 +1,5 @@
 .terraform*
-ansible
 *.tfstate*
 *.tfvars
+.kube
+.ssh

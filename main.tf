@@ -96,6 +96,7 @@ resource "proxmox_virtual_environment_download_file" "latest_ubuntu_22_jammy_qco
   datastore_id = "local"
   node_name    = "pve01"
   url          = "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
+  file_name    = "ceph-ubuntu-amd64.img"
 }
 
 resource "random_password" "ubuntu_vm_password" {
@@ -130,6 +131,7 @@ resource "local_file" "tf_ansible_vars_file_new" {
 
     # tf_instance_ami: 
     # tf_aws_instance_controlplace_ip: 
+    tf_monitor_ip = ${var.ceph_ips[0]}
     DOC
   filename = "./ansible/tf_ansible_vars_file.yaml"
 }

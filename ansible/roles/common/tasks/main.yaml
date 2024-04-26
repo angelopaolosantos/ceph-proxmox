@@ -1,0 +1,5 @@
+# roles/common/tasks/main.yml
+
+- name: Install Ceph requirements
+  import_tasks: prerequisites.yaml
+  become: true

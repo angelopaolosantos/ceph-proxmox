@@ -1,0 +1,8 @@
+---
+# file: setup_nodes.yaml
+
+- hosts: cluster
+  vars_files:
+    - tf_ansible_vars_file.yaml
+  roles:
+    - common

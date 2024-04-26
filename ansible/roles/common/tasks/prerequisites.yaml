@@ -1,0 +1,25 @@
+---
+# file: roles/common/tasks/prerequisites.yaml
+
+- name: Ping my hosts
+  ansible.builtin.ping:
+
+- name: Print message
+  ansible.builtin.debug:
+    msg: Installing Ceph Requirements...
+
+- name: Update apt and install cephadm
+  apt:
+    update_cache: yes
+    pkg:
+      - cephadm
+
+- name: Install ceph-common
+  shell:
+    cmd: cephadm add-repo --release reef \
+         cephadm install ceph-common
+
+
+- name: Update to SystemdCgroup value to True
+  shell:
+    cmd: cephadm bootstrap --mon-ip {{ tf_monitor_ip }}
