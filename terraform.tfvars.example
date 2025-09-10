@@ -1,0 +1,5 @@
+# create terraform.tfvars file to pass proxmox credential secrets, consider using vault to pull secrets instead.
+
+proxmox_endpoint = "https://myproxmox-endpoint"
+proxmox_username = "myusername"
+proxmox_password = "mypassword"
