@@ -12,21 +12,6 @@ variable "ceph_ips" {
     ]
 }
 
-variable "proxmox_endpoint" {
-  type = string
-  default = "https://my-proxmox-endpoint.local/"
-}
-
-variable "proxmox_username" {
-  type = string
-  default = "root@pam"
-}
-
-variable "proxmox_password" {
-  type = string
-  default = "my-proxmox-password"
-}
-
 variable "file_id" {
   type = string  
 }
@@ -48,7 +33,7 @@ variable "gateway" {
 
 variable "vm_user" {
     type = string
-    default = "talos"
+    default = "ceph"
 }
 
 variable "ceph_allowed_access_ip" {

@@ -83,7 +83,7 @@ ansible-playbook -i ./ansible/inventory.yaml ./ansible/playbook.yaml --tags "tag
 
 SSH into container
 ```
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i .ssh/my-private-key.pem ubuntu@192.168.254.101
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i .ssh/my-private-key.pem ceph@192.168.254.109
 ```
 
 Download terraform state from backend

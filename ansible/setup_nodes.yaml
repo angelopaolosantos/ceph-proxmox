@@ -4,20 +4,31 @@
 - hosts: ceph_nodes
   become: true
   tasks:
-    - name: Ensure Podman is installed
+    - name: Ensure Podman and Python is installed (cephadm requirements)
       apt:
         name: 
         - podman
+        - python3
         state: present
-        update_cache: yes
-        
+        update_cache: yes   
 
+
+# install and bootstrap cephadm
 - hosts: ceph_node_1
   become: true
   vars_files:
     - tf_ansible_vars_file.yaml
   tasks:
-    - name: Export values.yaml
+    - name: Install cephadm
+      environment:
+        CEPH_RELEASE: "18.2.0"
+      shell:
+        cmd: |
+          curl --silent --remote-name --location https://download.ceph.com/rpm-${CEPH_RELEASE}/el9/noarch/cephadm
+          chmod +x cephadm
+          ./cephadm add-repo --release tentacle
+          ./cephadm install
+    - name: Install ceph-common
       shell:
         cmd: |
           cephadm install ceph-common
@@ -40,14 +51,21 @@
         mode: '0600'  # Owner read/write, no access for others
         owner: '{{ ansible_user }}'
         group: '{{ ansible_user }}'
-    - name: Install cephadm 
-      apt:
-        name: 
-         - cephadm
-        state: present
-        update_cache: yes # Optional: Updates package cache before installing
-    - name: bootstrap cephadm
+    
+    - name: Bootstrap cephadm
       shell:
         cmd: |
           cephadm bootstrap --mon-ip {{ private_ip }} --ssh-user {{ ansible_user }} --ssh-private-key /tmp/ssh_keys/ceph.pem --ssh-public-key /tmp/ssh_keys/ceph.pub
-  tags: cephadm
+      args:
+        creates: /etc/ceph/ceph.conf
+
+    - name: Add hosts
+      shell:
+        cmd: |
+          ceph orch host add ceph-vm-2 192.168.254.110 --labels _admin
+          ceph orch host add ceph-vm-3 192.168.254.111 --labels _admin
+
+    - name: Add OSDs
+      shell:
+        cmd: |
+          ceph orch apply osd --all-available-devices
