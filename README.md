@@ -2,103 +2,128 @@
 
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-# Ceph Cluster in Proxmox
+# Ceph Cluster on Proxmox
 
-## About the Project
-
-This project lets you run a Ceph Cluster on a local Proxmox Server using virtual machines. This is useful for tinkering with ceph and understanding how it works. 
+## 📖 About the Project
+This project provides a simple way to deploy a **Ceph Cluster** on a local **Proxmox** server using virtual machines.  
+It is designed for learning, experimentation, and understanding how Ceph works in a lab environment.  
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Prerequisites
+---
 
-* On your local dev machine install:
-  * Terraform
-  * Ansible
-  * Transcrypt
-* Proxmox Server
-* Postgresql Server (optional, used as Terraform backend)
+## ⚙️ Prerequisites
 
-Install [Transcrypt](https://github.com/elasticdog/transcrypt) then run command `transcrypt` on the terminal. 
-Follow prompts to set secret key. 
-Transcrypt will encrypt and decrypt files listed in .gitattributes to git.  
+On your **local development machine**, install:
 
-After installing ansible, install the [Terraform Collection][terraform-collection] using ansible galaxy.
-```
+- [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)  
+- [Ansible](https://www.ansible.com/)  
+- [Transcrypt](https://github.com/elasticdog/transcrypt)  
+- Proxmox Server  
+- PostgreSQL Server *(optional, used as Terraform backend)*  
+
+### 🔑 Setting up Transcrypt
+1. Install [Transcrypt](https://github.com/elasticdog/transcrypt).  
+2. Run:
+   ```bash
+   transcrypt
+   ```
+3. Follow prompts to set a secret key.  
+
+Transcrypt will encrypt/decrypt files listed in `.gitattributes` when pushed to Git.  
+
+### 📦 Install Terraform Ansible Collection
+After installing Ansible, install the [Terraform Collection][terraform-collection]:
+```bash
 ansible-galaxy collection install cloud.terraform
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Step 1 - Provisioning the ceph cluster infrastructure
+---
 
-Create a terraform.tfvars file with the access credentials of your proxmox server. Enter values for 
-* proxmox_endpoint
-* proxmox_username
-* proxmox_password
+## 🚀 Step 1 - Provision Ceph Cluster Infrastructure
 
-I'm using postgres as a terraform backend. This is optional. You may use your preferred backend. 
-Create a config.pg.tfbackend file with access credentials to a postresql server. Enter values for
-* conn_str
-* schema_name
+1. Create a `terraform.tfvars` file with your Proxmox server credentials:
+   - `proxmox_endpoint`
+   - `proxmox_username`
+   - `proxmox_password`
 
-You can make changes to the variable.tf file to adjust ip addresses to the proxmox's network and infastructure. 
+2. *(Optional)* Use PostgreSQL as a Terraform backend:  
+   Create `config.pg.tfbackend` with:
+   - `conn_str`
+   - `schema_name`
 
-Default infastructure consists of:
-* 3 ceph nodes
+3. Adjust IP addresses and settings in `variables.tf` if needed.  
 
-#### Run Terraform
-```
-terraform init --backend-config=config.pg.tfbackend 
+### Default Infrastructure
+- 3 Ceph nodes
+
+### Run Terraform
+```bash
+terraform init --backend-config=config.pg.tfbackend
 terraform plan
 terraform apply
 ```
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Step 2 - Configuring the infastructure
+---
 
-#### Run Ansible Playbook
-```
+## 🛠️ Step 2 - Configure the Infrastructure
+
+### Run Ansible Playbook
+```bash
 export ANSIBLE_HOST_KEY_CHECKING=False
 ansible-playbook -i ./ansible/inventory.yaml ./ansible/playbook.yaml -vvvv
 ```
-Terraform command ran in step 1 generates a tf_ansible_vars_file.yaml that ansible can use in running tasks. -vvvv added for verbose output.
 
-### Cleanup
-Delete all created infastructure.
-`terraform destroy`
+The Terraform run in Step 1 generates a `tf_ansible_vars_file.yaml` file for Ansible.  
+Use `-vvvv` for verbose output.  
+
+---
+
+## 🧹 Cleanup
+
+To destroy the entire infrastructure:
+```bash
+terraform destroy
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-##### Useful commands to know:
-Print Terraform Inventory
-```
+---
+
+## 📌 Useful Commands
+
+### 🔧 Terraform & Ansible
+Print Terraform inventory:
+```bash
 ansible-inventory -i ./ansible/inventory.yaml --graph --vars
 ```
 
-Run specific tasks of ansible playbook
-```
+Run specific Ansible tasks:
+```bash
 ansible-playbook -i ./ansible/inventory.yaml ./ansible/playbook.yaml --tags "tag1,tag2"
 ```
 
-SSH into container
-```
+SSH into a VM:
+```bash
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i .ssh/my-private-key.pem ceph@192.168.254.109
 ```
 
-Download terraform state from backend
-```
+Download Terraform state:
+```bash
 terraform state pull > terraform.tfstate
 ```
 
-View terraform state
-```
+Show Terraform state:
+```bash
 terraform show -json
 ```
 
-
-Troubleshooting Terraform
-```
+### 🐛 Terraform Troubleshooting
+```bash
 terraform refresh
 terraform state rm <resource_name>
 terraform apply -target=<resource_name>
@@ -107,46 +132,50 @@ terraform apply -replace=<resource_name>
 terraform force-unlock <lock_id>
 TF_LOG=DEBUG terraform apply
 ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Useful Ceph commands:
-ssh into an admin ceph node and run the commands
+---
 
-Ceph status
-```
+## 💾 Useful Ceph Commands
+
+Run on an admin Ceph node:
+
+Check status:
+```bash
 ceph -s
 ```
 
-Adding Hosts
-```
+Add hosts:
+```bash
 ceph orch host add ceph-vm-2 192.168.254.110 --labels _admin
 ceph orch host add ceph-vm-3 192.168.254.111 --labels _admin
 ```
 
-List Hosts
-```
+List hosts:
+```bash
 ceph orch host ls
 ```
 
-Adding OSDs
-```
+Manage OSDs:
+```bash
 ceph osd tree
 ceph orch apply osd --all-available-devices
 ceph orch device ls
 ```
 
-Creating cephfs
-```
+Create CephFS:
+```bash
 ceph fs volume create cephfs
 ```
 
+---
+
+## 🔗 Resources
+- [Terraform CLI Installation](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)  
+- [Transcrypt Documentation](https://github.com/elasticdog/transcrypt)  
+
+---
+
 <!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/angelopaolosantos
-[product-screenshot]: images.png
 [terraform-collection]: https://galaxy.ansible.com/ui/repo/published/cloud/terraform/
-
-
-https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
-https://github.com/elasticdog/transcrypt
