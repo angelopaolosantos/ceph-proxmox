@@ -9,6 +9,8 @@
         name: 
         - podman
         - python3
+        - chrony
+        - lvm2
         state: present
         update_cache: yes   
 
