@@ -167,6 +167,41 @@ Create CephFS:
 ceph fs volume create cephfs
 ```
 
+Reset dashboard admin password
+Create password file
+```
+vi dashboard_password.yaml
+# enter preferred password and save
+ceph dashboard ac-user-set-password admin -i dashboard_password.yaml
+```
+
+Get service endpoints (dashboard url)
+```
+ceph mgr services
+```
+
+Create pools
+Block Storage
+In dashboard select application rds (block storage), replication 3.
+
+CephFS Filesystem Storage
+Label hosts the will be metadata servers. This is done in the dashboard. 
+Metadata pools are required in cephfs type storage
+```
+cephadm shell
+ceph fs volume create cephfs --placement="label:mds"
+# check if cephfs pools are created
+ceph osd pool ls
+```
+
+Object (similar to S3)
+Requires a Rados Gateway, label the servers with "rgw"
+```
+ceph orch apply rgw radosgw '--placement=label:rgw count-per-host:1' --port:8001
+# check if rgw pools are created
+ceph osd pool ls
+```
+
 ---
 
 ## 🔗 Resources
