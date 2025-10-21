@@ -8,3 +8,4 @@ admin.conf filter=crypt diff=crypt merge=crypt
 *.crt filter=crypt diff=crypt merge=crypt
 init-config-cert-key filter=crypt diff=crypt merge=crypt
 kubeconfig filter=crypt diff=crypt merge=crypt
+_out/* filter=crypt diff=crypt merge=crypt

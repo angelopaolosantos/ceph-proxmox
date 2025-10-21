@@ -77,7 +77,7 @@ resource "proxmox_virtual_environment_vm" "ceph_vm" {
   }
 
   memory {
-    dedicated = 2048 // 2048 | 4096 | 8192
+    dedicated = 4096 // 2048 | 4096 | 8192
   } 
 
   network_device {
@@ -88,5 +88,13 @@ resource "proxmox_virtual_environment_vm" "ceph_vm" {
 
   operating_system {
     type = "l26"
+  }
+
+  # added to ignore file size changes
+  lifecycle {
+    ignore_changes = [
+      # disk[0].size
+      disk
+    ]
   }
 }

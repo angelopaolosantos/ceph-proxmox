@@ -27,11 +27,10 @@ resource "proxmox_virtual_environment_download_file" "ubuntu_cloud_img" {
   content_type = "iso"
   datastore_id = "local"
   node_name    = "pve01"
-  // url          = "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img" 
-  // Using latest image will destroy vms when file is changed. Prefer to use specific image.
   url          = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
-  upload_timeout = 4444 // seconds, make it longer to accomodate big files
+  upload_timeout = 4444 # seconds, make it longer to accomodate big files
   file_name = "noble-server-cloudimg-amd64-CEPH-PROXMOX.img"
+  overwrite = false # ignore file size changes
 }
 
 resource "random_password" "vm_password" {
