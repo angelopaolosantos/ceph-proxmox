@@ -214,3 +214,4 @@ ceph osd pool ls
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/angelopaolosantos
 [terraform-collection]: https://galaxy.ansible.com/ui/repo/published/cloud/terraform/
+[Connect Multiple Kubernetes Clusters to an External Ceph Cluster]: https://www.youtube.com/watch?v=dKmpeV0sh1Q

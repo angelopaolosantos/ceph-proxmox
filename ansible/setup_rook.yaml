@@ -1,0 +1,23 @@
+- hosts: ceph_node_1
+  become: true
+  vars_files:
+    - tf_ansible_vars_file.yaml
+  tasks:
+    - name: Clone the rook repository
+      ansible.builtin.git:
+        repo: 'https://github.com/rook/rook.git'
+        dest: '/tmp/ceph-k8s/'
+        clone: yes
+        update: yes
+
+    - name: check if strict ARP is enabled
+      shell:
+        cmd: |
+          python3 create-external-cluster-resources.py --rbd-data-pool-name rbd --cephfs-filesystem-name cephfs --rgw-endpoint 192.168.254.109:8001  --namespace rook-ceph --format bash | tee /tmp/ceph-k8s/ceph-cluster.env
+      args:
+        chdir: /tmp/ceph-k8s/rook/deploy/examples/external/
+
+    - name: Copy remote file to local machine
+      ansible.builtin.fetch:
+        src: /tmp/ceph-k8s/ceph-cluster.env
+        dest: "{{ playbook_dir }}/env"
