@@ -16,8 +16,61 @@
           python3 create-external-cluster-resources.py --rbd-data-pool-name rbd --cephfs-filesystem-name cephfs --rgw-endpoint 192.168.254.109:8001  --namespace rook-ceph --format bash | tee /tmp/ceph-k8s/ceph-cluster.env
         chdir: /tmp/ceph-k8s/rook/deploy/examples/external/
 
-    - name: Copy remote file to local machine
+    - name: Copy env file to local machine
       ansible.builtin.fetch:
         src: /tmp/ceph-k8s/ceph-cluster.env
         dest: "{{ playbook_dir }}/../_out/"
         flat: true
+
+    - name: Copy crd file to local machine
+      ansible.builtin.fetch:
+        src: /tmp/ceph-k8s/rook/deploy/examples/crds.yaml
+        dest: "{{ playbook_dir }}/../_out/"
+        flat: true
+
+    - name: Copy common file to local machine
+      ansible.builtin.fetch:
+        src: /tmp/ceph-k8s/rook/deploy/examples/common.yaml
+        dest: "{{ playbook_dir }}/../_out/"
+        flat: true
+
+    - name: Copy csi-operator file to local machine
+      ansible.builtin.fetch:
+        src: /tmp/ceph-k8s/rook/deploy/examples/csi-operator.yaml
+        dest: "{{ playbook_dir }}/../_out/"
+        flat: true
+
+    - name: Copy operator file to local machine
+      ansible.builtin.fetch:
+        src: /tmp/ceph-k8s/rook/deploy/examples/operator.yaml
+        dest: "{{ playbook_dir }}/../_out/"
+        flat: true
+
+    
+
+- name: Manage Kubernetes objects on localhost
+  hosts: localhost
+  connection: local
+  vars:
+    current_working_dir: "{{ lookup('env', 'PWD') }}"
+  tasks:
+    - name: Apply _out/crds.yaml
+      ansible.builtin.shell:
+        cmd: |
+          kubectl apply -f crds.yaml
+        chdir: "{{ current_working_dir }}/_out/"
+    - name: Apply _out/common.yaml
+      ansible.builtin.shell:
+        cmd: |
+          kubectl apply -f common.yaml
+        chdir: "{{ current_working_dir }}/_out/"
+    - name: Apply _out/csi-operator.yaml
+      ansible.builtin.shell:
+        cmd: |
+          kubectl apply -f csi-operator.yaml
+        chdir: "{{ current_working_dir }}/_out/"
+    - name: Apply _out/operator.yaml
+      ansible.builtin.shell:
+        cmd: |
+          kubectl apply -f operator.yaml
+        chdir: "{{ current_working_dir }}/_out/"

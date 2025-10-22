@@ -75,11 +75,12 @@ terraform apply
 ### Run Ansible Playbook
 ```bash
 export ANSIBLE_HOST_KEY_CHECKING=False
-ansible-playbook -i ./ansible/inventory.yaml ./ansible/playbook.yaml -vvvv
+ansible-playbook -i ./ansible/inventory.yaml ./ansible/playbook.yaml -vvvv --ask-become-pass
 ```
 
 The Terraform run in Step 1 generates a `tf_ansible_vars_file.yaml` file for Ansible.  
 Use `-vvvv` for verbose output.  
+Use `--ask-become-pass` to enter password for localhost executions
 
 ---
 
