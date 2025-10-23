@@ -10,15 +10,16 @@
         clone: yes
         update: yes
 
-    - name: Generate ceph-cluster.env
+    - name: Generate ceph-cluster.sh
       shell:
         cmd: |
-          python3 create-external-cluster-resources.py --rbd-data-pool-name rbd --cephfs-filesystem-name cephfs --rgw-endpoint 192.168.254.109:8001  --namespace rook-ceph --format bash | tee /tmp/ceph-k8s/ceph-cluster.env
+          python3 create-external-cluster-resources.py --rbd-data-pool-name rbd --cephfs-filesystem-name cephfs --rgw-endpoint 192.168.254.109:8001  --namespace rook-ceph --format bash | tee /tmp/ceph-k8s/ceph-cluster.sh
+          echo "source ./import-external-cluster.sh" >> /tmp/ceph-k8s/ceph-cluster.sh
         chdir: /tmp/ceph-k8s/rook/deploy/examples/external/
 
     - name: Copy env file to local machine
       ansible.builtin.fetch:
-        src: /tmp/ceph-k8s/ceph-cluster.env
+        src: /tmp/ceph-k8s/ceph-cluster.sh
         dest: "{{ playbook_dir }}/../_out/"
         flat: true
 
@@ -43,6 +44,24 @@
     - name: Copy operator file to local machine
       ansible.builtin.fetch:
         src: /tmp/ceph-k8s/rook/deploy/examples/operator.yaml
+        dest: "{{ playbook_dir }}/../_out/"
+        flat: true
+
+    - name: Copy common-external file to local machine
+      ansible.builtin.fetch:
+        src: /tmp/ceph-k8s/rook/deploy/examples/common-external.yaml
+        dest: "{{ playbook_dir }}/../_out/"
+        flat: true
+
+    - name: Copy cluster-external file to local machine
+      ansible.builtin.fetch:
+        src: /tmp/ceph-k8s/rook/deploy/examples/cluster-external.yaml
+        dest: "{{ playbook_dir }}/../_out/"
+        flat: true
+
+    - name: Copy import-external-cluster file to local machine
+      ansible.builtin.fetch:
+        src: /tmp/ceph-k8s/rook/deploy/examples/import-external-cluster.sh
         dest: "{{ playbook_dir }}/../_out/"
         flat: true
 
@@ -73,4 +92,22 @@
       ansible.builtin.shell:
         cmd: |
           kubectl apply -f operator.yaml
+        chdir: "{{ current_working_dir }}/_out/"
+
+    - name: Apply _out/common-external.yaml
+      ansible.builtin.shell:
+        cmd: |
+          kubectl apply -f common-external.yaml
+        chdir: "{{ current_working_dir }}/_out/"
+
+    - name: Apply _out/cluster-external.yaml
+      ansible.builtin.shell:
+        cmd: |
+          kubectl apply -f cluster-external.yaml
+        chdir: "{{ current_working_dir }}/_out/"
+
+    - name: Import external cluster
+      ansible.builtin.shell:
+        cmd: |
+          bash ceph-cluster.sh
         chdir: "{{ current_working_dir }}/_out/"

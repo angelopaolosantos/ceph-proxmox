@@ -81,6 +81,7 @@ ansible-playbook -i ./ansible/inventory.yaml ./ansible/playbook.yaml -vvvv --ask
 The Terraform run in Step 1 generates a `tf_ansible_vars_file.yaml` file for Ansible.  
 Use `-vvvv` for verbose output.  
 Use `--ask-become-pass` to enter password for localhost executions
+Task includes running kubectl on local machine. Make sure kubeconfig is saved in .kube/config
 
 ---
 
