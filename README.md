@@ -217,3 +217,6 @@ ceph osd pool ls
 [linkedin-url]: https://linkedin.com/in/angelopaolosantos
 [terraform-collection]: https://galaxy.ansible.com/ui/repo/published/cloud/terraform/
 [Connect Multiple Kubernetes Clusters to an External Ceph Cluster]: https://www.youtube.com/watch?v=dKmpeV0sh1Q
+https://docs.ceph.com/en/reef/rbd/rbd-kubernetes/
+https://gist.github.com/morrismusumi/16d926b3ec86da1088d00b7f9076f3ed
+https://rook.io/docs/rook/latest-release/CRDs/Cluster/external-cluster/external-cluster/
